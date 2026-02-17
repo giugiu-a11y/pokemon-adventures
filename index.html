@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Adventures - Red Chapter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: #ffcb05;
+            text-shadow: 2px 2px 0 #3466af;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            background: #000;
+            border: 3px solid #ffcb05;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .controls {
+            margin-top: 20px;
+            color: #888;
+            font-size: 0.85em;
+            text-align: center;
+        }
+        .controls kbd {
+            background: #333;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Pokémon Adventures</h1>
+    <p class="subtitle">Red Chapter - Baseado no Mangá</p>
+    
+    <div id="game-container"></div>
+    
+    <div class="controls">
+        <p>
+            <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Mover |
+            <kbd>Z</kbd> A |
+            <kbd>X</kbd> B |
+            <kbd>Enter</kbd> Start |
+            <kbd>Shift</kbd> Select
+        </p>
+    </div>
+
+    <!-- EmulatorJS -->
+    <script>
+        EJS_player = '#game-container';
+        EJS_gameUrl = './roms/firered.gba';
+        EJS_core = 'gba';
+        EJS_gameName = 'Pokemon Adventures';
+        EJS_color = '#ffcb05';
+        EJS_startOnLoaded = true;
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+    </script>
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</body>
+</html>
