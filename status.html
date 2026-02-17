@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokemon Adventures - Status</title>
+    <style>
+        body { font-family: monospace; background: #1a1a2e; color: #fff; padding: 20px; }
+        .ok { color: #4f4; }
+        .err { color: #f44; }
+        .pending { color: #ff0; }
+        h1 { color: #ffcb05; }
+    </style>
+</head>
+<body>
+    <h1>🎮 Pokemon Adventures - Status</h1>
+    <div id="status">Verificando...</div>
+    <script>
+        const status = document.getElementById('status');
+        const checks = [];
+        
+        function log(msg, ok) {
+            checks.push({ msg, ok });
+            render();
+        }
+        
+        function render() {
+            status.innerHTML = checks.map(c => 
+                `<div class="${c.ok ? 'ok' : c.ok === false ? 'err' : 'pending'}">
+                    ${c.ok ? '✅' : c.ok === false ? '❌' : '⏳'} ${c.msg}
+                </div>`
+            ).join('');
+        }
+        
+        async function check() {
+            // Check ROM
+            log('Verificando ROM...', null);
+            try {
+                const r = await fetch('./roms/firered.gba');
+                if (r.ok) {
+                    const size = (await r.blob()).size;
+                    log(`ROM: ${(size/1024/1024).toFixed(1)}MB`, size > 10000000);
+                } else {
+                    log('ROM: Não encontrada', false);
+                }
+            } catch(e) { log('ROM: Erro - ' + e.message, false); }
+            
+            // Check Save
+            log('Verificando Save State...', null);
+            try {
+                const r = await fetch('./saves/start.sav');
+                if (r.ok) {
+                    const size = (await r.blob()).size;
+                    log(`Save: ${(size/1024).toFixed(0)}KB`, size > 100000);
+                } else {
+                    log('Save: Não encontrado', false);
+                }
+            } catch(e) { log('Save: Erro - ' + e.message, false); }
+            
+            // Check WebGL
+            log('Verificando WebGL...', null);
+            try {
+                const c = document.createElement('canvas');
+                const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+                log('WebGL: ' + (gl ? 'Suportado' : 'Não suportado'), !!gl);
+            } catch(e) { log('WebGL: Erro', false); }
+            
+            log('', null);
+            log('👆 Se tudo OK, acesse index.html para jogar!', true);
+        }
+        
+        check();
+    </script>
+</body>
+</html>
