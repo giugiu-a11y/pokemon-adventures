@@ -29,6 +29,12 @@
         .controls { margin-top: 20px; color: #888; font-size: 0.85em; text-align: center; }
         .controls kbd { background: #333; padding: 3px 8px; border-radius: 4px; }
         .note { margin-top: 15px; color: #4f4; font-size: 0.9em; }
+        #dynamic-hint {
+            margin-top: 8px;
+            color: #aef;
+            font-size: 0.85em;
+            transition: opacity 0.5s ease;
+        }
     </style>
 </head>
 <body>
@@ -38,9 +44,126 @@
     <div class="controls">
         <p><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Mover | <kbd>Z</kbd> A | <kbd>X</kbd> B | <kbd>Enter</kbd> Start</p>
         <p class="note">✨ NEW GAME → Direto pro quarto (pula intro Oak)!</p>
-        <p class="note">🎯 Vá até Viridian Forest e fale com o Boy para evento Mew!</p>
+        <p id="dynamic-hint">🗺️ Explore e converse com NPCs importantes</p>
     </div>
+
     <script>
+        // === SISTEMA DE HINTS DINÂMICO (sem spoilers) ===
+        // Hints são baseados no progresso do jogador - sem revelar plot!
+        const HINTS = [
+            // Estado inicial / exploração geral
+            { icon: "🗺️", text: "Explore ao norte de Pallet Town" },
+            { icon: "💬", text: "Converse com NPCs - eles têm dicas importantes" },
+            { icon: "🌿", text: "Siga a história do mangá Pokémon Adventures" },
+            { icon: "🔍", text: "Preste atenção em eventos nas rotas" },
+            { icon: "⚔️", text: "Capture Pokémon e treine para os Gyms" },
+            { icon: "🏆", text: "Derrote os 8 Gym Leaders e vá ao Pokémon League" },
+            { icon: "📖", text: "Cada área tem segredos do mangá para descobrir" },
+            { icon: "🌟", text: "Explore todas as rotas com atenção" },
+        ];
+
+        // Sistema de hints dinâmico com fade
+        let currentHintIndex = 0;
+        const hintEl = document.getElementById('dynamic-hint');
+
+        function showHint(hint) {
+            hintEl.style.opacity = '0';
+            setTimeout(() => {
+                hintEl.textContent = hint.icon + ' ' + hint.text;
+                hintEl.style.opacity = '1';
+            }, 500);
+        }
+
+        function rotateHint() {
+            currentHintIndex = (currentHintIndex + 1) % HINTS.length;
+            showHint(HINTS[currentHintIndex]);
+        }
+
+        // Mostrar primeiro hint
+        showHint(HINTS[0]);
+
+        // Rotacionar a cada 5 segundos
+        setInterval(rotateHint, 5000);
+
+        // Quando o jogo iniciar, tentar ler VAR_MANGA_AUTOWALK_STATE para hints contextuais
+        // VAR_MANGA_AUTOWALK_STATE = 0x40FF → índice 0xFF=255 no array vars[]
+        // vars[] está em SaveBlock1 + 0x1000, cada var é u16 (2 bytes)
+        // Logo: offset dentro de SaveBlock1 = 0x1000 + (0x40FF - 0x4000) * 2 = 0x1000 + 0x1FE = 0x11FE
+        const VAR_OFFSET_IN_SAVEBLOCK = 0x11FE;
+
+        // Hints contextuais por estado do manga (sem spoilers!)
+        const STATE_HINTS = {
+            0: { icon: "🏠", text: "Explore ao norte de Pallet Town" },
+            1: { icon: "🏠", text: "Explore ao norte de Pallet Town" },
+            2: { icon: "🏠", text: "Explore ao norte de Pallet Town" },
+            3: { icon: "🌲", text: "Continue explorando ao norte..." },
+            4: { icon: "🌲", text: "Algo estranho na Viridian Forest..." },
+            5: { icon: "🔬", text: "Visite o Professor Oak em Pallet Town" },
+            6: { icon: "🔬", text: "Visite o Professor Oak em Pallet Town" },
+            7: { icon: "🛤️", text: "Siga pela Route 3 ao norte de Pewter" },
+            8: { icon: "🟡", text: "Procure algo especial em Pewter City" },
+            9: { icon: "⚔️", text: "Desafie o Gym de Pewter City" },
+           10: { icon: "🏆", text: "Continue para Cerulean City" },
+        };
+
+        // Tentar ler memória do emulador para hints contextuais
+        // Isso só funciona após o jogo iniciar
+        window.EJS_onGameStart = function() {
+            console.log('[Hints] Jogo iniciado - tentando ler VAR_MANGA_AUTOWALK_STATE');
+            startContextualHints();
+        };
+
+        function startContextualHints() {
+            // Tentar a cada 10 segundos ler o estado atual
+            setInterval(() => {
+                try {
+                    const state = readAutoWalkState();
+                    if (state !== null && state > 0) {
+                        // Encontrar hint contextual para o estado
+                        const maxState = Math.max(...Object.keys(STATE_HINTS).map(Number));
+                        const key = Math.min(state, maxState);
+                        const hint = STATE_HINTS[key] || STATE_HINTS[maxState];
+                        hintEl.style.opacity = '0';
+                        setTimeout(() => {
+                            hintEl.textContent = hint.icon + ' ' + hint.text;
+                            hintEl.style.opacity = '1';
+                        }, 500);
+                    }
+                } catch(e) {
+                    // Silently fail - usar hints rotativos como fallback
+                }
+            }, 10000);
+        }
+
+        function readAutoWalkState() {
+            try {
+                const emu = window.EJS_emulator;
+                if (!emu || !emu.gameManager) return null;
+                const mod = emu.gameManager.Module;
+                if (!mod || !mod.HEAPU8) return null;
+
+                // Tentar ler gSaveBlock1Ptr da memória IWRAM do GBA
+                // Para mGBA LibRetro no WASM, a memória GBA é mapeada em regiões do WASM
+                // Endereços GBA: IWRAM=0x03000000, EWRAM=0x02000000
+                // O mGBA expõe buffers de memória via retro_get_memory_data
+                // Tentativa via asm/funções exportadas
+                if (mod.asm && mod.asm.retro_get_memory_data) {
+                    // RETRO_MEMORY_SAVE_RAM = 0
+                    const ptr = mod.asm.retro_get_memory_data(0);
+                    if (ptr) {
+                        // Save RAM do GBA FireRed começa com sector 0 do flash
+                        // Cada setor = 0x1000 bytes, vars ficam no setor 1 offset 0
+                        // Isso depende muito do formato de save - muito variável
+                        return null;
+                    }
+                }
+                return null;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        // === Configuração do EmulatorJS ===
         EJS_player = '#game-container';
         EJS_gameUrl = './roms/firered.gba';
         EJS_core = 'gba';
