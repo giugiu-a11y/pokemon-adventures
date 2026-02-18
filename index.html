@@ -93,17 +93,61 @@
 
         // Hints contextuais por estado do manga (sem spoilers!)
         const STATE_HINTS = {
-            0: { icon: "🏠", text: "Explore ao norte de Pallet Town" },
-            1: { icon: "🏠", text: "Explore ao norte de Pallet Town" },
-            2: { icon: "🏠", text: "Explore ao norte de Pallet Town" },
-            3: { icon: "🌲", text: "Continue explorando ao norte..." },
-            4: { icon: "🌲", text: "Algo estranho na Viridian Forest..." },
-            5: { icon: "🔬", text: "Visite o Professor Oak em Pallet Town" },
-            6: { icon: "🔬", text: "Visite o Professor Oak em Pallet Town" },
-            7: { icon: "🛤️", text: "Siga pela Route 3 ao norte de Pewter" },
-            8: { icon: "🟡", text: "Procure algo especial em Pewter City" },
-            9: { icon: "⚔️", text: "Desafie o Gym de Pewter City" },
-           10: { icon: "🏆", text: "Continue para Cerulean City" },
+            // --- Pallet Town / Viridian ---
+            0:  { icon: "🏠", text: "Explore ao norte de Pallet Town" },
+            1:  { icon: "🏠", text: "Explore ao norte de Pallet Town" },
+            2:  { icon: "🏠", text: "Explore ao norte de Pallet Town" },
+            3:  { icon: "🌲", text: "Continue explorando ao norte..." },
+            4:  { icon: "🌲", text: "Algo estranho na Viridian Forest..." },
+            5:  { icon: "🔬", text: "Visite o Professor Oak em Pallet Town" },
+            6:  { icon: "🔬", text: "Visite o Professor Oak em Pallet Town" },
+            // --- Pewter City ---
+            7:  { icon: "🛤️", text: "Siga pela Route 3 ao norte de Pewter" },
+            8:  { icon: "🟡", text: "Procure algo especial em Pewter City" },
+            9:  { icon: "⚔️", text: "Desafie o Gym de Pewter City" },
+           10:  { icon: "🏆", text: "Continue para Cerulean City" },
+            // --- Cerulean City / Misty ---
+           11:  { icon: "💧", text: "Desafie Misty em Cerulean Gym" },
+           12:  { icon: "🌉", text: "Explore ao norte pela Nugget Bridge" },
+            // --- Route 24 / Vermilion ---
+           13:  { icon: "🔶", text: "Investigue a Nugget Bridge ao norte" },
+           14:  { icon: "⚡", text: "Lt. Surge espera em Vermilion City" },
+            // --- Route 12 / Lavender ---
+           15:  { icon: "😴", text: "Algo bloqueia a Route 12..." },
+            // --- Celadon City / Erika ---
+           16:  { icon: "🌸", text: "Erika aguarda em Celadon City" },
+           17:  { icon: "🌸", text: "Explore mais Celadon City" },
+            // --- Game Corner ---
+           18:  { icon: "🎰", text: "Algo suspeito acontece no Game Corner" },
+            // --- Saffron City / Silph Co ---
+           19:  { icon: "🏢", text: "Invasão em Saffron City — entre no Silph Co." },
+           20:  { icon: "🔴", text: "O Silph Co. está em perigo — ajude quem precisar" },
+            // --- Fuchsia City / Koga ---
+           21:  { icon: "☠️", text: "Koga aguarda em Fuchsia City" },
+            // --- Eevee / Celadon ---
+           22:  { icon: "🦊", text: "Uma captura especial te espera em Celadon" },
+           23:  { icon: "✨", text: "Cuide bem do seu novo companheiro" },
+            // --- Sabrina / Saffron Gym ---
+           24:  { icon: "🔮", text: "Sabrina domina o Saffron Gym" },
+           25:  { icon: "🧠", text: "Use estratégia contra a líder psíquica" },
+            // --- Cinnabar Island / Blaine ---
+           26:  { icon: "🌋", text: "Blaine aguarda em Cinnabar Island" },
+           27:  { icon: "🔥", text: "Enfrente o calor do Cinnabar Gym" },
+            // --- Elite Four ---
+           28:  { icon: "🏟️", text: "Desafio final: a Pokemon League te aguarda" },
+           29:  { icon: "🃏", text: "O primeiro dos Elite Four está pronto" },
+           30:  { icon: "👻", text: "Continue na Pokemon League..." },
+           31:  { icon: "🐉", text: "O campeão está cada vez mais próximo" },
+            // --- Epilogue ---
+           32:  { icon: "🌅", text: "O fim da jornada se aproxima..." },
+           33:  { icon: "🌅", text: "O fim da jornada se aproxima..." },
+           34:  { icon: "🌅", text: "O fim da jornada se aproxima..." },
+           35:  { icon: "🌅", text: "O fim da jornada se aproxima..." },
+           36:  { icon: "🌟", text: "Uma nova página começa..." },
+           37:  { icon: "🌟", text: "Uma nova página começa..." },
+           38:  { icon: "🌟", text: "Uma nova página começa..." },
+           39:  { icon: "🏁", text: "A aventura está quase completa" },
+           40:  { icon: "🎉", text: "Parabéns — você completou a aventura!" },
         };
 
         // Tentar ler memória do emulador para hints contextuais
